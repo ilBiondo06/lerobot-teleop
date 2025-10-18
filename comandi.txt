@@ -1,0 +1,79 @@
+# VAI NELLA CARTELLA lerobot e digita uno ad uno questi comandi... segui le istruzioni.
+
+conda activate lerobot_movella
+
+pip install tensorflow==2.16.2 # questa dipendenza andrebbe nei requirements.txt
+
+pip install -e . # perché questa prende tutti i requirements.txt
+
+pip install pyttsx3 # anche questo
+sudo apt install espeak
+
+pip install numpy==1.24.0 # e anche questo
+
+python3 lerobot/scripts/find_motors_bus_port.py
+
+sudo chmod 666 /dev/ttyACM0
+
+# Open another terminal window
+socat -d -d PTY,raw,echo=0,link=/tmp/ttyV0,mode=666 PTY,raw,echo=0,link=/tmp/ttyV1,mode=666
+
+
+python3 lerobot/scripts/control_robot.py   --robot.type=so100MovellaDot   --robot.cameras='{}'   --control.type=calibrate   --control.arms='["main_follower"]'
+
+python3 lerobot/scripts/control_robot.py   --robot.type=so100MovellaDot   --robot.cameras='{}'   --control.type=teleoperate
+
+python3 lerobot/scripts/control_robot.py   --robot.type=so100MovellaDot   --control.type=teleoperate
+
+______________________________________________________________________________
+
+token hugging face: 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
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=30   --control.single_task="Pick the ball and put it in the box."   --control.repo_id=ilBiondo06/so100_ball_C4   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=3  --control.push_to_hub=true
+
+rm -rf home/davide/.cache/huggingface/lerobot/ilBiondo06/so100_test
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=30   --control.single_task="Sergio Pick the ball and put it in the box."   --control.repo_id=ilBiondo06/test_so100_for_cameras   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=10   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=1  --control.push_to_hub=false
+
+
+
+
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Pick the ball and put it in the box."   --control.repo_id=sergiov2000/so100_movella_pick_ball_A1   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=2  --control.push_to_hub=true
+
+
+
+
+# Record movella dataset
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Stack the ball on top of the lego structure."   --control.repo_id=sergiov2000/so100_movella_stack_ball_A1   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=2  --control.push_to_hub=true
+
+
+# Merge datasets
+python merge.py --sources movella_stack_a1 movella_stack_a2 movella_stack_a3 movella_stack_b1 movella_stack_b2 movella_stack_b3 movella_stack_b4 movella_stack_b5 movella_stack_c1 movella_stack_c2 movella_stack_c3 movella_stack_c4 movella_stack_d1 movella_stack_d2 movella_stack_d3 movella_stack_d4 movella_stack_d5 movella_stack_d6 movella_stack_d7 --output movella_stack_ball --max_dim 6 --fps 20
+
+
+
+
+python merge.py --sources  movella_push_a1 movella_push_a2 movella_push_a3 movella_push_a4 movella_push_b1 movella_push_b2 movella_push_b3 movella_push_b4 movella_push_c1 movella_push_c2 movella_push_c3 movella_push_c4 movella_push_c5 movella_push_d1 movella_push_d2 movella_push_d3 movella_push_d4 --output movella_push_ball --max_dim 6 --fps 20
+
+# Evaluate a trained policy
+python lerobot/scripts/control_robot.py   --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Push the ball into the area enclosed by the lego structure."   --control.repo_id=sergiov2000/eval_act_so100_movella_push_a1  --control.tags='["tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=1   --control.push_to_hub=true   --control.policy.path=outputs/train/act_so100_push_ball/checkpoints/last/pretrained_model
+
+
+
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Stack the ball on top of the lego structure."   --control.repo_id=sergiov2000/so100_movella_stack_ball_A1   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=2  --control.push_to_hub=true
+
+
+# Usability test 
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Pick the ball and place it in the box."   --control.repo_id=sergiov2000/so100_movella_ball_usability_u3_pick1   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=60   --control.reset_time_s=30   --control.num_episodes=1  --control.push_to_hub=true
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Stack the ball on top of the lego structure."   --control.repo_id=sergiov2000/so100_movella_ball_usability_u3_stack1   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=60   --control.reset_time_s=30   --control.num_episodes=1  --control.push_to_hub=true
+
+python3 lerobot/scripts/control_robot.py  --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Push the ball in the area encosed by the lego structure."   --control.repo_id=sergiov2000/so100_movella_ball_usability_u3_push1   --control.tags='["so100","tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=60   --control.reset_time_s=30   --control.num_episodes=1  --control.push_to_hub=true
+
+
+
+python lerobot/scripts/control_robot.py   --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Stack the ball on top of the lego structure."   --control.repo_id=sergiov2000/eval_act_so100_movella_demo_stack_1  --control.tags='["tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=1   --control.push_to_hub=true   --control.policy.path=outputs/train/act_so100_stack_ball/checkpoints/last/pretrained_model
+python lerobot/scripts/control_robot.py   --robot.type=so100MovellaDot   --control.type=record   --control.fps=20   --control.single_task="Push the ball in the area encosed by the lego structure."   --control.repo_id=sergiov2000/eval_act_so100_movella_demo_push_1  --control.tags='["tutorial"]'   --control.warmup_time_s=5   --control.episode_time_s=30   --control.reset_time_s=30   --control.num_episodes=1   --control.push_to_hub=true   --control.policy.path=outputs/train/act_so100_push_ball/checkpoints/last/pretrained_model
